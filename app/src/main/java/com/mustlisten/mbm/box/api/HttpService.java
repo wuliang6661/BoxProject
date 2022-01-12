@@ -2,6 +2,7 @@ package com.mustlisten.mbm.box.api;
 
 import com.mustlisten.mbm.box.BaseResult;
 import com.mustlisten.mbm.box.TaskBean;
+import com.mustlisten.mbm.box.VersionBO;
 
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -19,6 +20,13 @@ public interface HttpService {
 
     String URL = "https://dsongs.xuju.club/";   //测试服
 //    String URL = "http://mapi.open.yinghezhong.com/";  //正式环境
+
+    /**
+     * 心跳接口
+     */
+    @FormUrlEncoded
+    @POST("/on_demand_songs/api/v1/heartbeat_box")
+    Observable<BaseResult<VersionBO>> heartBeanBox(@Field("data") String data, @Field("time") long time);
 
 
     /**

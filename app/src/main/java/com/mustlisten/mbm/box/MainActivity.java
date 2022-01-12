@@ -47,11 +47,28 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(Long aLong) {
-                        getMusic();
+                        heartBox();
                     }
                 });
     }
 
+
+    private void heartBox() {
+        HttpServiceIml.heartBeanBox().subscribe(new HttpResultSubscriber<VersionBO>() {
+            @Override
+            public void onSuccess(VersionBO versionBO) {
+                 int timer = MyApplication.spUtils.getInt("timer");
+//                 if(){
+//
+//                 }
+            }
+
+            @Override
+            public void onFiled(String message) {
+
+            }
+        });
+    }
 
     private void getMusic() {
         HttpServiceIml.getPlayBox().subscribe(new HttpResultSubscriber<TaskBean>() {

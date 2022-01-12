@@ -1,6 +1,7 @@
 package com.mustlisten.mbm.box.api;
 
 import com.mustlisten.mbm.box.TaskBean;
+import com.mustlisten.mbm.box.VersionBO;
 
 import rx.Observable;
 
@@ -25,6 +26,12 @@ public class HttpServiceIml {
         return service;
     }
 
+    /**
+     * 心跳
+     */
+    public static Observable<VersionBO> heartBeanBox() {
+        return getService().heartBeanBox("online", System.currentTimeMillis()).compose(RxResultHelper.httpRusult());
+    }
 
     /**
      * 获取播放歌曲
