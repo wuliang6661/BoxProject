@@ -5,24 +5,67 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.webkit.HttpAuthHandler;
+
+import com.mustlisten.mbm.box.api.HttpResultSubscriber;
+import com.mustlisten.mbm.box.api.HttpServiceIml;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
-
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        startVoice();
+        requestHeart();
     }
 
 
+    /**
+     * 轮询获取歌曲接口
+     */
+    private void requestHeart() {
+        Observable.interval(0, 2, TimeUnit.SECONDS)
+                .observeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Long>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                    }
+
+                    @Override
+                    public void onNext(Long aLong) {
+                        getMusic();
+                    }
+                });
+    }
 
 
+    private void getMusic() {
+        HttpServiceIml.getPlayBox().subscribe(new HttpResultSubscriber<TaskBean>() {
+            @Override
+            public void onSuccess(TaskBean taskBean) {
 
+            }
+
+            @Override
+            public void onFiled(String message) {
+
+            }
+        });
+    }
 
 
     private MediaPlayer mediaPlayer;
