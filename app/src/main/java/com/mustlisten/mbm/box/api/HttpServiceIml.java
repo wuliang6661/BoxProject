@@ -1,5 +1,7 @@
 package com.mustlisten.mbm.box.api;
 
+import com.mustlisten.mbm.box.TaskBean;
+
 import rx.Observable;
 
 /**
@@ -27,7 +29,7 @@ public class HttpServiceIml {
     /**
      * 获取播放歌曲
      */
-    public static Observable<String> getPlayBox() {
+    public static Observable<TaskBean> getPlayBox() {
         return getService().getPlaySongBox().compose(RxResultHelper.httpRusult());
     }
 

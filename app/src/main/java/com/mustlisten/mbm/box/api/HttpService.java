@@ -1,6 +1,7 @@
 package com.mustlisten.mbm.box.api;
 
 import com.mustlisten.mbm.box.BaseResult;
+import com.mustlisten.mbm.box.TaskBean;
 
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -24,7 +25,7 @@ public interface HttpService {
      * 获取要播放的歌曲
      */
     @GET("/on_demand_songs/api/v1/get_play_song_box")
-    Observable<BaseResult<String>> getPlaySongBox();
+    Observable<BaseResult<TaskBean>> getPlaySongBox();
 
 
     /**
