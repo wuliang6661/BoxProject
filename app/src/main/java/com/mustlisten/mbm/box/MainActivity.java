@@ -148,14 +148,14 @@ public class MainActivity extends Activity {
             public void onFinish(String musicBo) {
                 taskBean = null;
                 MyApplication.spUtils.clear();
-                syncStop();
+                syncStop(1);
             }
 
             @Override
             public void onError() {
                 taskBean = null;
                 MyApplication.spUtils.clear();
-                syncStop();
+                syncStop(0);
             }
         });
     }
@@ -182,8 +182,8 @@ public class MainActivity extends Activity {
     /**
      * 上报结束播放
      */
-    private void syncStop() {
-        HttpServiceIml.stopPlayMusic(taskBean.task_id).subscribe(new HttpResultSubscriber<String>() {
+    private void syncStop(int status) {
+        HttpServiceIml.stopPlayMusic(taskBean.task_id, status).subscribe(new HttpResultSubscriber<String>() {
             @Override
             public void onSuccess(String s) {
 

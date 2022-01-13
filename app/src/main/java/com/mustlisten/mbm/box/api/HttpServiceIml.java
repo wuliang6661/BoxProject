@@ -51,8 +51,8 @@ public class HttpServiceIml {
     /**
      * 结束播放歌曲
      */
-    public static Observable<String> stopPlayMusic(String taskId) {
-        return getService().playStopNotify(taskId).compose(RxResultHelper.httpRusult());
+    public static Observable<String> stopPlayMusic(String taskId,int status) {
+        return getService().playStopNotify(taskId,status).compose(RxResultHelper.httpRusult());
     }
 
 }

@@ -49,6 +49,6 @@ public interface HttpService {
      */
     @FormUrlEncoded
     @POST("/on_demand_songs/api/v1/play_stop_notify")
-    Observable<BaseResult<String>> playStopNotify(@Field("task_id") String task_id);
+    Observable<BaseResult<String>> playStopNotify(@Field("task_id") String task_id,@Field("status") int status);
 
 }
