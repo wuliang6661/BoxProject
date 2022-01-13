@@ -85,7 +85,11 @@ public class MainActivity extends Activity {
 
                     @Override
                     public void onNext(Long aLong) {
-                        getMusic();
+                        String taskId = MyApplication.spUtils.getString("taskId", "");
+                        //没有正在播放的音乐
+                        if (StringUtils.isEmpty(taskId)) {
+                            getMusic();
+                        }
                     }
                 });
     }
@@ -94,7 +98,9 @@ public class MainActivity extends Activity {
         HttpServiceIml.getPlayBox().subscribe(new HttpResultSubscriber<TaskBean>() {
             @Override
             public void onSuccess(TaskBean taskBean) {
-                startPlay(taskBean);
+                if (taskBean != null && !StringUtils.isEmpty(taskBean.task_id)) {
+                    startLead(taskBean);
+                }
             }
 
             @Override
@@ -103,19 +109,6 @@ public class MainActivity extends Activity {
             }
         });
     }
-
-
-    /**
-     * 判断当前是否有正在播放的歌曲，如果有，则不切换
-     */
-    private void startPlay(TaskBean taskBean) {
-        String taskId = MyApplication.spUtils.getString("taskId", "");
-        //没有正在播放的音乐
-        if (StringUtils.isEmpty(taskId)) {
-            startLead(taskBean);
-        }
-    }
-
 
     /**
      * 播放引导语
@@ -136,8 +129,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onError() {
-                MainActivity.this.taskBean = null;
-                MyApplication.spUtils.clear();
+                new Handler().postDelayed(() -> startMusic(), taskBean.interval * 1000L);
             }
         });
     }
@@ -163,6 +155,7 @@ public class MainActivity extends Activity {
             public void onError() {
                 taskBean = null;
                 MyApplication.spUtils.clear();
+                syncStop();
             }
         });
     }
