@@ -8,9 +8,7 @@ public class TaskBean {
 
     public String song_play_url;
 
-    public String interval;
-
-    public Integer timer;
+    public Integer interval;
 
     public Integer volume;
 

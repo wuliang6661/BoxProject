@@ -37,23 +37,22 @@ public class MusicPlayUtils {
 
     public void startPlay(String musicUrl, int volume, OnMusicFinishListener listener) {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-            stopPlay();
-            if (listener != null) {
-                listener.onFinish(musicUrl);
-            }
+            return;
         }
         if (mediaPlayer == null) {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            new AudioMngHelper(context)
-                    .setVoice100(volume);
         }
         try {
+            new AudioMngHelper(context).setVoice100(volume);
             mediaPlayer.reset();
             mediaPlayer.setDataSource(musicUrl);
             mediaPlayer.prepareAsync();
             mediaPlayer.setOnPreparedListener(mp -> {
                 mediaPlayer.start();
+                if (listener != null) {
+                    listener.onStart();
+                }
             });
             mediaPlayer.setOnCompletionListener(mp -> {
                 LogUtils.e("播放完成");
@@ -64,6 +63,10 @@ public class MusicPlayUtils {
             });
         } catch (IOException e) {
             e.printStackTrace();
+            stopPlay();
+            if (listener != null) {
+                listener.onError();
+            }
         }
     }
 
@@ -77,6 +80,10 @@ public class MusicPlayUtils {
 
     public interface OnMusicFinishListener {
 
+        void onStart();
+
         void onFinish(String musicBo);
+
+        void onError();
     }
 }
