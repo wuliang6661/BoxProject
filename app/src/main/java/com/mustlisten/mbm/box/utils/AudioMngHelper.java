@@ -1,4 +1,4 @@
-package com.mustlisten.mbm.box;
+package com.mustlisten.mbm.box.utils;
 
 import android.content.Context;
 import android.media.AudioManager;

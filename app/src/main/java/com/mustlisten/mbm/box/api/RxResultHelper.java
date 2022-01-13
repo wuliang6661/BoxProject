@@ -1,7 +1,7 @@
 package com.mustlisten.mbm.box.api;
 
 
-import com.mustlisten.mbm.box.BaseResult;
+import com.mustlisten.mbm.box.bean.BaseResult;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;

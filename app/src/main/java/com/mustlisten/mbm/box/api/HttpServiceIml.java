@@ -1,7 +1,7 @@
 package com.mustlisten.mbm.box.api;
 
-import com.mustlisten.mbm.box.TaskBean;
-import com.mustlisten.mbm.box.VersionBO;
+import com.mustlisten.mbm.box.bean.TaskBean;
+import com.mustlisten.mbm.box.bean.VersionBO;
 
 import rx.Observable;
 

@@ -7,6 +7,10 @@ import android.os.Handler;
 import com.blankj.utilcode.util.StringUtils;
 import com.mustlisten.mbm.box.api.HttpResultSubscriber;
 import com.mustlisten.mbm.box.api.HttpServiceIml;
+import com.mustlisten.mbm.box.bean.TaskBean;
+import com.mustlisten.mbm.box.bean.VersionBO;
+import com.mustlisten.mbm.box.utils.MusicPlayUtils;
+import com.mustlisten.mbm.box.utils.UpdateUtils;
 
 import java.util.concurrent.TimeUnit;
 

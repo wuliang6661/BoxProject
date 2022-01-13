@@ -1,4 +1,4 @@
-package com.mustlisten.mbm.box;
+package com.mustlisten.mbm.box.bean;
 
 /**
  * Created by wuliang on 2017/3/27.

@@ -1,8 +1,7 @@
-package com.mustlisten.mbm.box;
+package com.mustlisten.mbm.box.utils;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.os.Handler;
@@ -14,6 +13,8 @@ import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.LogUtils;
+import com.mustlisten.mbm.box.config.FileConfig;
+import com.mustlisten.mbm.box.bean.VersionBO;
 
 import java.io.File;
 import java.io.FileOutputStream;

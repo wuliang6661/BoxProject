@@ -1,8 +1,8 @@
 package com.mustlisten.mbm.box.api;
 
-import com.mustlisten.mbm.box.BaseResult;
-import com.mustlisten.mbm.box.TaskBean;
-import com.mustlisten.mbm.box.VersionBO;
+import com.mustlisten.mbm.box.bean.BaseResult;
+import com.mustlisten.mbm.box.bean.TaskBean;
+import com.mustlisten.mbm.box.bean.VersionBO;
 
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;

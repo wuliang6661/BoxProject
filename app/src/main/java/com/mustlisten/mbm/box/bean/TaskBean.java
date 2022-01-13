@@ -1,4 +1,4 @@
-package com.mustlisten.mbm.box;
+package com.mustlisten.mbm.box.bean;
 
 public class TaskBean {
 
