@@ -94,7 +94,7 @@ public class MainActivity extends Activity {
         HttpServiceIml.getPlayBox().subscribe(new HttpResultSubscriber<TaskBean>() {
             @Override
             public void onSuccess(TaskBean taskBean) {
-
+                startPlay(taskBean);
             }
 
             @Override
@@ -171,7 +171,7 @@ public class MainActivity extends Activity {
     /**
      * 上报开始播放
      */
-    private void syncStart(){
+    private void syncStart() {
         HttpServiceIml.startPlayMusic(taskBean.task_id).subscribe(new HttpResultSubscriber<String>() {
             @Override
             public void onSuccess(String s) {
@@ -189,7 +189,7 @@ public class MainActivity extends Activity {
     /**
      * 上报结束播放
      */
-    private void syncStop(){
+    private void syncStop() {
         HttpServiceIml.stopPlayMusic(taskBean.task_id).subscribe(new HttpResultSubscriber<String>() {
             @Override
             public void onSuccess(String s) {
