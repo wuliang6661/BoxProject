@@ -61,6 +61,13 @@ public class MusicPlayUtils {
                     listener.onFinish(musicUrl);
                 }
             });
+            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                stopPlay();
+                if (listener != null) {
+                    listener.onError();
+                }
+                return false;
+            });
         } catch (IOException e) {
             e.printStackTrace();
             stopPlay();
