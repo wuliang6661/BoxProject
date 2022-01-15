@@ -1,6 +1,4 @@
-plugins {
-    id 'com.android.application'
-}
+apply plugin: 'com.android.application'
 
 android {
     compileSdk 31
@@ -9,8 +7,8 @@ android {
         applicationId "com.mustlisten.mbm.box"
         minSdk 16
         targetSdk 31
-        versionCode 200
-        versionName "2.0.0"
+        versionCode 100
+        versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

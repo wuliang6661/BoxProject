@@ -10,6 +10,7 @@ import com.mustlisten.mbm.box.api.HttpServiceIml;
 import com.mustlisten.mbm.box.bean.TaskBean;
 import com.mustlisten.mbm.box.bean.VersionBO;
 import com.mustlisten.mbm.box.utils.MusicPlayUtils;
+import com.mustlisten.mbm.box.utils.RootUtils;
 import com.mustlisten.mbm.box.utils.UpdateUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -27,6 +28,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        RootUtils.upgradeRootPermission(getPackageCodePath());
         requestHeart();
         getMusicByLunXun();
     }
@@ -138,7 +140,7 @@ public class MainActivity extends Activity {
      * 播放音乐
      */
     private void startMusic() {
-        MusicPlayUtils.getInstance(this).startPlay(taskBean.song_play_url, taskBean.volume, new MusicPlayUtils.OnMusicFinishListener() {
+        MusicPlayUtils.getInstance(this).startPlay(taskBean.play_url, taskBean.volume, new MusicPlayUtils.OnMusicFinishListener() {
             @Override
             public void onStart() {
                 syncStart();
@@ -146,15 +148,11 @@ public class MainActivity extends Activity {
 
             @Override
             public void onFinish(String musicBo) {
-                taskBean = null;
-                MyApplication.spUtils.clear();
                 syncStop(1);
             }
 
             @Override
             public void onError() {
-                taskBean = null;
-                MyApplication.spUtils.clear();
                 syncStop(0);
             }
         });
@@ -186,12 +184,14 @@ public class MainActivity extends Activity {
         HttpServiceIml.stopPlayMusic(taskBean.task_id, status).subscribe(new HttpResultSubscriber<String>() {
             @Override
             public void onSuccess(String s) {
-
+                taskBean = null;
+                MyApplication.spUtils.clear();
             }
 
             @Override
             public void onFiled(String message) {
-
+                taskBean = null;
+                MyApplication.spUtils.clear();
             }
         });
     }

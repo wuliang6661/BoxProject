@@ -6,7 +6,7 @@ public class TaskBean {
 
     public String lead_play_url;
 
-    public String song_play_url;
+    public String play_url;
 
     public Integer interval;
 

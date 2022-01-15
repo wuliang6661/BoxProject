@@ -1,5 +1,6 @@
 package com.mustlisten.mbm.box.api;
 
+import com.blankj.utilcode.util.AppUtils;
 import com.mustlisten.mbm.box.bean.TaskBean;
 import com.mustlisten.mbm.box.bean.VersionBO;
 
@@ -30,7 +31,7 @@ public class HttpServiceIml {
      * 心跳
      */
     public static Observable<VersionBO> heartBeanBox() {
-        return getService().heartBeanBox("online", System.currentTimeMillis()).compose(RxResultHelper.httpRusult());
+        return getService().heartBeanBox("online", System.currentTimeMillis(), AppUtils.getAppVersionCode()).compose(RxResultHelper.httpRusult());
     }
 
     /**
@@ -51,8 +52,8 @@ public class HttpServiceIml {
     /**
      * 结束播放歌曲
      */
-    public static Observable<String> stopPlayMusic(String taskId,int status) {
-        return getService().playStopNotify(taskId,status).compose(RxResultHelper.httpRusult());
+    public static Observable<String> stopPlayMusic(String taskId, int status) {
+        return getService().playStopNotify(taskId, status).compose(RxResultHelper.httpRusult());
     }
 
 }

@@ -25,8 +25,8 @@ public interface HttpService {
      * 心跳接口
      */
     @FormUrlEncoded
-    @POST("/on_demand_songs/api/v1/heartbeat_box")
-    Observable<BaseResult<VersionBO>> heartBeanBox(@Field("data") String data, @Field("time") long time);
+    @POST("/on_demand_songs/api/v1/heartbeat")
+    Observable<BaseResult<VersionBO>> heartBeanBox(@Field("data") String data, @Field("time") long time, @Field("version") int version);
 
 
     /**
