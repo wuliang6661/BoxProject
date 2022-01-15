@@ -1,6 +1,7 @@
 package com.mustlisten.mbm.box.utils;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
@@ -53,13 +54,17 @@ public class MacAddressUtils {
      *
      * @return
      */
-    public static String getMacAddress(Context mContext) {
-        WifiManager wifiMgr = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+    public static String getMacAddress(Activity mContext) {
+        WifiManager wifiMgr = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInf = wifiMgr.getConnectionInfo();
         // wifiInf.getMacAddress().getMacAddress方法在安卓6.0系统上获取到的Mac 都是 02:00:00:00:00:00。
         String invalidMacAddress = "02:00:00:00:00:00";
 
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(mContext,
+                    new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                    }, 1);
             return "";
         }
         if (wifiInf.getMacAddress().equals(invalidMacAddress)) {
@@ -85,6 +90,7 @@ public class MacAddressUtils {
 
     /**
      * 获取6.0以上系统的mac值
+     *
      * @throws Exception
      */
     private static String getAddressMacByFile(WifiManager wifiMan) throws Exception {
@@ -105,6 +111,7 @@ public class MacAddressUtils {
 
     /**
      * 获取6.0以上系统的mac值
+     *
      * @throws Exception
      */
     private static String crunchifyGetStringFromStream(InputStream crunchifyStream) throws IOException {

@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -73,14 +74,14 @@ public class MainActivity extends Activity {
     }
 
     private void newHeart() {
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(headerInterceptor).build();
         FormBody body = new FormBody.Builder()
                 .add("data", "online")
                 .add("version", String.valueOf(AppUtils.getAppVersionCode()))
                 .build();
         Request request = new Request.Builder()
                 .url(HttpService.URL + "/on_demand_songs/api/v1/box/heartbeat")
-                .addHeader("DEVICE-ID", DeviceUtils.getMacAddress())
                 .post(body)
                 .build();
         Call call = client.newCall(request);
@@ -101,11 +102,10 @@ public class MainActivity extends Activity {
 
 
     private void newGetMusic() {
-        OkHttpClient client = new OkHttpClient();
-        LogUtils.e(MacAddressUtils.getMacAddress(this));
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(headerInterceptor).build();
         Request request = new Request.Builder()
                 .url(HttpService.URL + "/on_demand_songs/api/v1/box/get_play_song")
-                .addHeader("DEVICE-ID", MacAddressUtils.getMacAddress(this))
                 .build();
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
@@ -188,13 +188,13 @@ public class MainActivity extends Activity {
      * 上报开始播放
      */
     private void syncStart() {
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(headerInterceptor).build();
         FormBody body = new FormBody.Builder()
                 .add("task_id", taskBean.task_id)
                 .build();
         Request request = new Request.Builder()
                 .url(HttpService.URL + "/on_demand_songs/api/v1/box/play_start_notify")
-                .addHeader("DEVICE-ID", DeviceUtils.getMacAddress())
                 .post(body)
                 .build();
         Call call = client.newCall(request);
@@ -219,14 +219,14 @@ public class MainActivity extends Activity {
      * 上报结束播放
      */
     private void syncStop(int status) {
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(headerInterceptor).build();
         FormBody body = new FormBody.Builder()
                 .add("task_id", taskBean.task_id)
                 .add("status", String.valueOf(status))
                 .build();
         Request request = new Request.Builder()
                 .url(HttpService.URL + "/on_demand_songs/api/v1/box/play_stop_notify")
-                .addHeader("DEVICE-ID", DeviceUtils.getMacAddress())
                 .post(body)
                 .build();
         Call call = client.newCall(request);
@@ -245,5 +245,18 @@ public class MainActivity extends Activity {
         });
     }
 
+
+    /**
+     * 请求头增加公共参数
+     */
+    Interceptor headerInterceptor = chain -> {
+        Request request;
+        LogUtils.e(MacAddressUtils.getWifiMacAddress(this));
+        // 以拦截到的请求为基础创建一个新的请求对象，然后插入Header
+        request = chain.request().newBuilder()
+                .addHeader("DEVICE-ID", MacAddressUtils.getWifiMacAddress(this))
+                .build();
+        return chain.proceed(request);
+    };
 
 }
