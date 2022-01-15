@@ -53,7 +53,6 @@ public class ApiManager {
 
     /**
      * 获取请求代理
-     *
      */
     public <T> T configRetrofit(Class<T> service, String url) {
         Retrofit mRetrofit = new Retrofit.Builder()
@@ -71,11 +70,11 @@ public class ApiManager {
      */
     Interceptor headerInterceptor = chain -> {
         Request request;
-        LogUtils.e(DeviceUtils.getAndroidID());
+        LogUtils.e(DeviceUtils.getMacAddress());
         // todo 暂时写固定值
         // 以拦截到的请求为基础创建一个新的请求对象，然后插入Header
         request = chain.request().newBuilder()
-                .addHeader("DEVICE-ID", "999bb02f92656ef5")
+                .addHeader("DEVICE-ID", DeviceUtils.getMacAddress())
                 .build();
         return chain.proceed(request);
     };

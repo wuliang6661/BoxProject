@@ -4,6 +4,8 @@ import android.app.Application;
 
 import com.blankj.utilcode.util.SPUtils;
 
+import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
+
 public class MyApplication extends Application {
 
     public static SPUtils spUtils;
@@ -12,5 +14,6 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         spUtils = SPUtils.getInstance("box_project");
+        CustomActivityOnCrash.install(this);
     }
 }
