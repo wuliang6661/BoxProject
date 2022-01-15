@@ -4,25 +4,37 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.DeviceUtils;
+import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.StringUtils;
-import com.mustlisten.mbm.box.api.HttpResultSubscriber;
-import com.mustlisten.mbm.box.api.HttpServiceIml;
+import com.google.gson.Gson;
+import com.mustlisten.mbm.box.api.HttpService;
 import com.mustlisten.mbm.box.bean.TaskBean;
-import com.mustlisten.mbm.box.bean.VersionBO;
+import com.mustlisten.mbm.box.utils.MacAddressUtils;
 import com.mustlisten.mbm.box.utils.MusicPlayUtils;
 import com.mustlisten.mbm.box.utils.RootUtils;
-import com.mustlisten.mbm.box.utils.UpdateUtils;
 
-import java.util.concurrent.TimeUnit;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import rx.Observable;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import androidx.annotation.NonNull;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class MainActivity extends Activity {
 
     private TaskBean taskBean;
+
+    private static OkHttpClient okHttpClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,80 +50,92 @@ public class MainActivity extends Activity {
      * 心跳
      */
     private void requestHeart() {
-        Observable.interval(0, 2, TimeUnit.MINUTES)
-                .observeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Long>() {
-                    @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                    }
-
-                    @Override
-                    public void onNext(Long aLong) {
-                        heartBox();
-                    }
-                });
-    }
-
-
-    private void heartBox() {
-        HttpServiceIml.heartBeanBox().subscribe(new HttpResultSubscriber<VersionBO>() {
+        new Timer().schedule(new TimerTask() {
             @Override
-            public void onSuccess(VersionBO versionBO) {
-                new UpdateUtils().checkUpdate(MainActivity.this, versionBO);
+            public void run() {
+                newHeart();
             }
-
-            @Override
-            public void onFiled(String message) {
-
-            }
-        });
+        }, 0, 2 * 60 * 1000);
     }
 
 
     private void getMusicByLunXun() {
-        Observable.interval(0, 10, TimeUnit.SECONDS)
-                .observeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Long>() {
-                    @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                    }
-
-                    @Override
-                    public void onNext(Long aLong) {
-                        String taskId = MyApplication.spUtils.getString("taskId", "");
-                        //没有正在播放的音乐
-                        if (StringUtils.isEmpty(taskId)) {
-                            getMusic();
-                        }
-                    }
-                });
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                String taskId = MyApplication.spUtils.getString("taskId", "");
+                //没有正在播放的音乐
+                if (StringUtils.isEmpty(taskId)) {
+                    newGetMusic();
+                }
+            }
+        }, 0, 10000);
     }
 
-    private void getMusic() {
-        HttpServiceIml.getPlayBox().subscribe(new HttpResultSubscriber<TaskBean>() {
+    private void newHeart() {
+        OkHttpClient client = new OkHttpClient();
+        FormBody body = new FormBody.Builder()
+                .add("data", "online")
+                .add("version", String.valueOf(AppUtils.getAppVersionCode()))
+                .build();
+        Request request = new Request.Builder()
+                .url(HttpService.URL + "/on_demand_songs/api/v1/box/heartbeat")
+                .addHeader("DEVICE-ID", DeviceUtils.getMacAddress())
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
             @Override
-            public void onSuccess(TaskBean taskBean) {
-                if (taskBean != null && !StringUtils.isEmpty(taskBean.task_id)) {
-                    startLead(taskBean);
-                }
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
             }
 
             @Override
-            public void onFiled(String message) {
-
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String result = response.body().string();
+                    LogUtils.e(result);
+                }
             }
         });
     }
+
+
+    private void newGetMusic() {
+        OkHttpClient client = new OkHttpClient();
+        LogUtils.e(MacAddressUtils.getMacAddress(this));
+        Request request = new Request.Builder()
+                .url(HttpService.URL + "/on_demand_songs/api/v1/box/get_play_song")
+                .addHeader("DEVICE-ID", MacAddressUtils.getMacAddress(this))
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String result = response.body().string();
+                    LogUtils.e(result);
+                    try {
+                        JSONObject object = new JSONObject(result);
+                        if (object.getInt("errcode") == 0) {
+                            String json = object.getString("data");
+                            TaskBean bean = new Gson().fromJson(json, TaskBean.class);
+                            if (bean != null && !StringUtils.isEmpty(bean.task_id)) {
+                                startLead(bean);
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
 
     /**
      * 播放引导语
@@ -164,15 +188,28 @@ public class MainActivity extends Activity {
      * 上报开始播放
      */
     private void syncStart() {
-        HttpServiceIml.startPlayMusic(taskBean.task_id).subscribe(new HttpResultSubscriber<String>() {
+        OkHttpClient client = new OkHttpClient();
+        FormBody body = new FormBody.Builder()
+                .add("task_id", taskBean.task_id)
+                .build();
+        Request request = new Request.Builder()
+                .url(HttpService.URL + "/on_demand_songs/api/v1/box/play_start_notify")
+                .addHeader("DEVICE-ID", DeviceUtils.getMacAddress())
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
             @Override
-            public void onSuccess(String s) {
-
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                //...
             }
 
             @Override
-            public void onFiled(String message) {
-
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String result = response.body().string();
+                    LogUtils.e(result);
+                }
             }
         });
     }
@@ -182,18 +219,31 @@ public class MainActivity extends Activity {
      * 上报结束播放
      */
     private void syncStop(int status) {
-        HttpServiceIml.stopPlayMusic(taskBean.task_id, status).subscribe(new HttpResultSubscriber<String>() {
+        OkHttpClient client = new OkHttpClient();
+        FormBody body = new FormBody.Builder()
+                .add("task_id", taskBean.task_id)
+                .add("status", String.valueOf(status))
+                .build();
+        Request request = new Request.Builder()
+                .url(HttpService.URL + "/on_demand_songs/api/v1/box/play_stop_notify")
+                .addHeader("DEVICE-ID", DeviceUtils.getMacAddress())
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
             @Override
-            public void onSuccess(String s) {
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 taskBean = null;
                 MyApplication.spUtils.clear();
             }
 
             @Override
-            public void onFiled(String message) {
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 taskBean = null;
                 MyApplication.spUtils.clear();
             }
         });
     }
+
+
 }
