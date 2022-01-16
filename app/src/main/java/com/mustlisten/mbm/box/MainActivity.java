@@ -251,10 +251,14 @@ public class MainActivity extends Activity {
      */
     Interceptor headerInterceptor = chain -> {
         Request request;
-        LogUtils.e(MacAddressUtils.getWifiMacAddress(this));
+        LogUtils.e(MacAddressUtils.getMacAddress());
+        String mac = MacAddressUtils.getMacAddress();
+        if (StringUtils.isEmpty(mac)) {
+            mac = "00:00:00:00:00";
+        }
         // 以拦截到的请求为基础创建一个新的请求对象，然后插入Header
         request = chain.request().newBuilder()
-                .addHeader("DEVICE-ID", MacAddressUtils.getWifiMacAddress(this))
+                .addHeader("DEVICE-ID", mac)
                 .build();
         return chain.proceed(request);
     };
