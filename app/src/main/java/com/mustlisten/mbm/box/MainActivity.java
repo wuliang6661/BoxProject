@@ -1,5 +1,6 @@
 package com.mustlisten.mbm.box;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,6 +9,7 @@ import android.os.Message;
 import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.google.gson.Gson;
@@ -62,6 +64,8 @@ public class MainActivity extends Activity {
 
 
     Handler handler = new Handler() {
+
+        @SuppressLint("HandlerLeak")
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
@@ -254,14 +258,14 @@ public class MainActivity extends Activity {
      */
     Interceptor headerInterceptor = chain -> {
         Request request;
-        LogUtils.e(MacAddressUtils.getMacAddress());
+//        LogUtils.e(DeviceUtils.getMacAddress() + chain.request().url().toString());
         String mac = MacAddressUtils.getMacAddress();
         if (StringUtils.isEmpty(mac)) {
             mac = "00:00:00:00:00";
         }
         // 以拦截到的请求为基础创建一个新的请求对象，然后插入Header
         request = chain.request().newBuilder()
-                .addHeader("DEVICE-ID", mac)
+                .addHeader("DEVICE-ID", MacAddressUtils.getMacAddress())
                 .build();
         return chain.proceed(request);
     };
