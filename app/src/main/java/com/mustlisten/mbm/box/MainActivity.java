@@ -4,8 +4,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 
+import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.AppUtils;
-import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.google.gson.Gson;
@@ -22,7 +23,6 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import androidx.annotation.NonNull;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -233,14 +233,18 @@ public class MainActivity extends Activity {
         call.enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                taskBean = null;
-                MyApplication.spUtils.clear();
+                new Handler().postDelayed(() -> {
+                    taskBean = null;
+                    MyApplication.spUtils.clear();
+                }, 10000);
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                taskBean = null;
-                MyApplication.spUtils.clear();
+                new Handler().postDelayed(() -> {
+                    taskBean = null;
+                    MyApplication.spUtils.clear();
+                }, 10000);
             }
         });
     }
