@@ -265,7 +265,7 @@ public class MainActivity extends Activity {
         }
         // 以拦截到的请求为基础创建一个新的请求对象，然后插入Header
         request = chain.request().newBuilder()
-                .addHeader("DEVICE-ID", MacAddressUtils.getMacAddress())
+                .addHeader("DEVICE-ID", mac)
                 .build();
         return chain.proceed(request);
     };
