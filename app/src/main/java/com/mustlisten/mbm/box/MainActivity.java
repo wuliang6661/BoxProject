@@ -3,7 +3,7 @@ package com.mustlisten.mbm.box;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
+import android.os.Message;
 
 import androidx.annotation.NonNull;
 
@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
         MyApplication.spUtils.clear();
         RootUtils.upgradeRootPermission(getPackageCodePath());
         requestHeart();
-        getMusicByLunXun();
+        handler.sendEmptyMessage(0x11);
     }
 
     /**
@@ -61,18 +61,18 @@ public class MainActivity extends Activity {
     }
 
 
-    private void getMusicByLunXun() {
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                String taskId = MyApplication.spUtils.getString("taskId", "");
-                //没有正在播放的音乐
-                if (StringUtils.isEmpty(taskId)) {
-                    newGetMusic();
-                }
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            String taskId = MyApplication.spUtils.getString("taskId", "");
+            //没有正在播放的音乐
+            if (StringUtils.isEmpty(taskId)) {
+                newGetMusic();
             }
-        }, 0, 10000);
-    }
+        }
+    };
+
 
     private void newHeart() {
         OkHttpClient client = new OkHttpClient.Builder()
@@ -93,10 +93,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String result = response.body().string();
-                    LogUtils.e(result);
-                }
+
             }
         });
     }
@@ -113,6 +110,7 @@ public class MainActivity extends Activity {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
+                handler.sendEmptyMessageDelayed(0x11, 10000);
             }
 
             @Override
@@ -127,12 +125,14 @@ public class MainActivity extends Activity {
                             TaskBean bean = new Gson().fromJson(json, TaskBean.class);
                             if (bean != null && !StringUtils.isEmpty(bean.task_id)) {
                                 startLead(bean);
+                                return;
                             }
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
+                handler.sendEmptyMessageDelayed(0x11, 10000);
             }
         });
     }
@@ -234,18 +234,16 @@ public class MainActivity extends Activity {
         call.enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    taskBean = null;
-                    MyApplication.spUtils.clear();
-                }, 10000);
+                taskBean = null;
+                MyApplication.spUtils.clear();
+                handler.sendEmptyMessageDelayed(0x11, 10000);
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    taskBean = null;
-                    MyApplication.spUtils.clear();
-                }, 10000);
+                taskBean = null;
+                MyApplication.spUtils.clear();
+                handler.sendEmptyMessageDelayed(0x11, 10000);
             }
         });
     }
