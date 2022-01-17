@@ -3,6 +3,7 @@ package com.mustlisten.mbm.box;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 
@@ -233,7 +234,7 @@ public class MainActivity extends Activity {
         call.enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                new Handler().postDelayed(() -> {
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     taskBean = null;
                     MyApplication.spUtils.clear();
                 }, 10000);
@@ -241,7 +242,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                new Handler().postDelayed(() -> {
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     taskBean = null;
                     MyApplication.spUtils.clear();
                 }, 10000);
