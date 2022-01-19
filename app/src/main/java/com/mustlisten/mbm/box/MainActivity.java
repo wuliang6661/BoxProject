@@ -39,6 +39,7 @@ public class MainActivity extends Activity {
     private TaskBean taskBean;
 
     private static OkHttpClient okHttpClient;
+    private Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +55,11 @@ public class MainActivity extends Activity {
      * 心跳
      */
     private void requestHeart() {
-        new Timer().schedule(new TimerTask() {
+        if (timer != null) {
+            return;
+        }
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 newHeart();
@@ -258,7 +263,7 @@ public class MainActivity extends Activity {
      */
     Interceptor headerInterceptor = chain -> {
         Request request;
-//        LogUtils.e(DeviceUtils.getMacAddress() + chain.request().url().toString());
+        LogUtils.e(DeviceUtils.getMacAddress() + chain.request().url().toString());
         String mac = MacAddressUtils.getMacAddress();
         if (StringUtils.isEmpty(mac)) {
             mac = "00:00:00:00:00";
