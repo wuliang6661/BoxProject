@@ -6,10 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
-import androidx.annotation.NonNull;
-
 import com.blankj.utilcode.util.AppUtils;
-import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.google.gson.Gson;
@@ -26,6 +23,7 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import androidx.annotation.NonNull;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -38,7 +36,7 @@ public class MainActivity extends Activity {
 
     private TaskBean taskBean;
 
-    private static OkHttpClient okHttpClient;
+    private Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +52,11 @@ public class MainActivity extends Activity {
      * 心跳
      */
     private void requestHeart() {
-        new Timer().schedule(new TimerTask() {
+        if (timer != null) {
+            return;
+        }
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 newHeart();
