@@ -51,7 +51,7 @@ public class MainActivity extends Activity {
     /**
      * 心跳
      */
-    private void requestHeart() {
+    private synchronized void requestHeart() {
         if (timer != null) {
             return;
         }
