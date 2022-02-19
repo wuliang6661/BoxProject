@@ -6,12 +6,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
-import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.google.gson.Gson;
 import com.mustlisten.mbm.box.api.HttpService;
 import com.mustlisten.mbm.box.bean.TaskBean;
+import com.mustlisten.mbm.box.utils.HeartTimerUtils;
 import com.mustlisten.mbm.box.utils.MacAddressUtils;
 import com.mustlisten.mbm.box.utils.MusicPlayUtils;
 import com.mustlisten.mbm.box.utils.RootUtils;
@@ -21,7 +21,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import androidx.annotation.NonNull;
 import okhttp3.Call;
@@ -44,25 +43,10 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         MyApplication.spUtils.clear();
         RootUtils.upgradeRootPermission(getPackageCodePath());
-        requestHeart();
+        HeartTimerUtils.getInstance();
         handler.sendEmptyMessage(0x11);
     }
 
-    /**
-     * 心跳
-     */
-    private synchronized void requestHeart() {
-        if (timer != null) {
-            return;
-        }
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                newHeart();
-            }
-        }, 0, 2 * 60 * 1000);
-    }
 
 
     Handler handler = new Handler() {
@@ -78,31 +62,6 @@ public class MainActivity extends Activity {
             }
         }
     };
-
-
-    private void newHeart() {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(headerInterceptor).build();
-        FormBody body = new FormBody.Builder()
-                .add("data", "online")
-                .add("version", String.valueOf(AppUtils.getAppVersionCode()))
-                .build();
-        Request request = new Request.Builder()
-                .url(HttpService.URL + "/on_demand_songs/api/v1/box/heartbeat")
-                .post(body)
-                .build();
-        Call call = client.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-
-            }
-        });
-    }
 
 
     private void newGetMusic() {
